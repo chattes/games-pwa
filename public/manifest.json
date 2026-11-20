@@ -1,0 +1,26 @@
+{
+  "name": "Dhruv Learns — Board Games",
+  "short_name": "Board Games",
+  "description": "Chess Coach, Checkers, Othello and Dots & Boxes. Offline-first, play vs a bot that teaches: hints, blunder detection and take-backs.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1e1e2e",
+  "theme_color": "#1e1e2e",
+  "categories": ["games", "education"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

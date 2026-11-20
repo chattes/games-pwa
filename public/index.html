@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1e1e2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Board Games">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<title>Dhruv Learns</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #1e1e2e;
+    color: #e4e4e7;
+    padding: 20px 16px;
+  }
+  header { text-align: center; }
+  h1 { font-size: 1.8rem; letter-spacing: 3px; }
+  p.sub { color: #a6adc8; margin-top: 8px; font-size: 0.95rem; }
+  .grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 420px;
+  }
+  a.card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    padding: 20px;
+    min-height: 96px;
+    background: #313244;
+    border-radius: 16px;
+    text-decoration: none;
+    color: #e4e4e7;
+    transition: transform 0.15s, background 0.15s;
+    touch-action: manipulation;
+  }
+  a.card:hover, a.card:active { background: #45475a; }
+  .icon { font-size: 3.2rem; flex-shrink: 0; animation: bob 3.2s ease-in-out infinite; }
+  .card:nth-child(2) .icon { animation-delay: 0.5s; }
+  .card:nth-child(3) .icon { animation-delay: 1.0s; }
+  .card:nth-child(4) .icon { animation-delay: 1.5s; }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-7px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .icon { animation: none; }
+  }
+  .name { font-size: 1.2rem; font-weight: 700; }
+  .desc { font-size: 0.85rem; color: #a6adc8; line-height: 1.4; margin-top: 4px; }
+  @media (min-width: 640px) {
+    body { gap: 36px; }
+    h1 { font-size: 2.4rem; letter-spacing: 4px; }
+    .grid {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 920px;
+      gap: 24px;
+    }
+    a.card {
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      padding: 36px 20px;
+      gap: 12px;
+    }
+    a.card:hover { transform: translateY(-6px); }
+    .icon { font-size: 4rem; }
+    .name { font-size: 1.3rem; }
+  }
+  #installBanner {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    max-width: 420px;
+    margin: 0 auto;
+    background: #313244;
+    border: 1px solid #45475a;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: slideUp 0.3s ease-out;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  #installBanner.visible { display: flex; }
+  .install-text { font-size: 0.9rem; color: #e4e4e7; }
+  .install-text strong { color: #89b4fa; }
+  .install-actions { display: flex; gap: 8px; }
+  .install-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: #89b4fa;
+    color: #1e1e2e;
+  }
+  .install-btn:hover { background: #b4befe; }
+  .install-btn.secondary { background: #45475a; color: #e4e4e7; }
+  .install-btn.secondary:hover { background: #585b70; }
+  .install-close { background: none; border: none; color: #a6adc8; font-size: 1.2rem; cursor: pointer; padding: 0; line-height: 1; }
+</style>
+</head>
+<body>
+<header>
+  <h1>BORING GAMES</h1>
+  <p class="sub">Pick a game. No account, no ads.</p>
+</header>
+<div class="grid">
+  <a class="card" href="chess.html">
+    <div class="icon">&#9822;</div>
+    <div>
+      <div class="name">Chess Coach</div>
+      <div class="desc">Vs bot with hints and blunder detection. Learn while you play.</div>
+    </div>
+  </a>
+  <a class="card" href="checkers.html">
+    <div class="icon">&#9818;</div>
+    <div>
+      <div class="name">Checkers Coach</div>
+      <div class="desc">Vs bot with hints and blunder detection. Captures are mandatory.</div>
+    </div>
+  </a>
+  <a class="card" href="othello.html">
+    <div class="icon">&#9681;</div>
+    <div>
+      <div class="name">Othello Coach</div>
+      <div class="desc">Reversi vs bot. Sandwich discs, grab corners, learn mobility.</div>
+    </div>
+  </a>
+  <a class="card" href="dots-and-boxes.html">
+    <div class="icon">&#9634;</div>
+    <div>
+      <div class="name">Dots & Boxes</div>
+      <div class="desc">Complete boxes to claim them. Chains and nerves of steel.</div>
+    </div>
+  </a>
+</div>
+<div id="installBanner" role="dialog" aria-label="Install app">
+  <div class="install-text">Install <strong>Dhruv Learns</strong> to play offline and access games from your home screen.</div>
+  <div class="install-actions">
+    <button class="install-btn" id="installBtn">Install</button>
+    <button class="install-btn secondary" id="dismissBtn">Not now</button>
+  </div>
+  <button class="install-close" id="closeBanner" aria-label="Dismiss">&times;</button>
+</div>
+<script>
+let deferredPrompt = null;
+const banner = document.getElementById('installBanner');
+const installBtn = document.getElementById('installBtn');
+const dismissBtn = document.getElementById('dismissBtn');
+const closeBanner = document.getElementById('closeBanner');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  banner.classList.add('visible');
+});
+
+installBtn.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  banner.classList.remove('visible');
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') {
+    console.log('User accepted install');
+  }
+  deferredPrompt = null;
+});
+
+dismissBtn.addEventListener('click', () => {
+  banner.classList.remove('visible');
+  localStorage.setItem('installDismissed', 'true');
+});
+
+closeBanner.addEventListener('click', () => {
+  banner.classList.remove('visible');
+});
+
+window.addEventListener('appinstalled', () => {
+  banner.classList.remove('visible');
+  deferredPrompt = null;
+  console.log('PWA installed');
+});
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(console.error);
+}
+
+if (localStorage.getItem('installDismissed')) {
+  banner.classList.remove('visible');
+}
+</script>
+</body>
+</html>
