@@ -3579,7 +3579,7 @@ const PST = {
   q: [-20,-10,-10,-5,-5,-10,-10,-20, -10,0,0,0,0,0,0,-10, -10,0,5,5,5,5,0,-10, -5,0,5,5,5,5,0,-5, 0,0,5,5,5,5,0,-5, -10,5,5,5,5,5,0,-10, -10,0,5,0,0,0,0,-10, -20,-10,-10,-5,-5,-10,-10,-20],
   k: [-30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30, -20,-30,-30,-40,-40,-30,-30,-20, -10,-20,-20,-20,-20,-20,-20,-10, 20,30,0,0,0,0,30,20, 20,30,10,0,0,10,30,20]
 };
-const GLYPH = { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' };
+const GLYPH = { w: { k: '♔', q: '♕', r: '♖', b: '♗', n: '♘', p: '♙' }, b: { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' } };
 const FILES = 'abcdefgh';
 
 function evaluateBoard(game) {
@@ -3678,7 +3678,7 @@ function render() {
       sq.dataset.square = squareName(r, c);
       const piece = board[r][c];
       if (piece) {
-        sq.textContent = GLYPH[piece.type];
+        sq.textContent = GLYPH[piece.color][piece.type];
         sq.style.color = piece.color === 'w' ? '#ffffff' : '#1c1c1c';
         sq.style.textShadow = piece.color === 'w' ? '0 0 3px #000' : '0 0 3px #fff8';
       }
