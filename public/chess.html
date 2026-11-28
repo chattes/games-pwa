@@ -159,6 +159,15 @@
     padding: 2px 10px;
     cursor: pointer;
   }
+  .tutor-log { max-height: 220px; overflow-y: auto; font-size: 0.9rem; margin-bottom: 8px; }
+  .tutor-msg { padding: 6px 10px; border-radius: 8px; margin: 6px 0; max-width: 92%; }
+  .tutor-msg.me { background: #45475a; margin-left: auto; }
+  .tutor-msg.coach { background: #313244; color: #cdd6f4; }
+  .tutor-form { display: flex; gap: 6px; }
+  .tutor-form input { flex: 1; min-width: 0; padding: 10px; border-radius: 8px; border: 1px solid #45475a; background: #1e1e2e; color: #e4e4e7; font-size: 16px; }
+  .tutor-form button { padding: 10px 14px; border-radius: 8px; border: none; background: #89b4fa; color: #1e1e2e; font-weight: 700; cursor: pointer; }
+  .tutor-form button:disabled { opacity: 0.5; }
+  @media (max-width: 600px) { .tutor-log { max-height: 180px; } }
 </style>
 </head>
 <body>
@@ -171,6 +180,14 @@
   <div class="card">
     <div style="margin-bottom:6px;font-weight:700;color:#cdd6f4">Coach</div>
     <div id="coach">Make a move. I'll watch for blunders and teach as we go.</div>
+  </div>
+  <div class="card">
+    <div style="margin-bottom:6px;font-weight:700;color:#cdd6f4">Ask Coach (chess questions only)</div>
+    <div id="tutorLog" class="tutor-log" aria-live="polite"></div>
+    <form id="tutorForm" class="tutor-form" autocomplete="off">
+      <input id="tutorInput" maxlength="300" placeholder="e.g. Why is my king not safe?" aria-label="Ask the coach">
+      <button id="tutorSend" type="submit">Ask</button>
+    </form>
   </div>
   <div class="card">
     <div id="controls">
@@ -3857,6 +3874,7 @@ difficultyEl.addEventListener('change', () => {
 });
 
 render();
+window.getTutorState = () => ({ fen: game.fen(), pgn: game.pgn(), turn: game.turn() });
 
 const helpModal = document.getElementById('helpModal');
 document.getElementById('helpBtn').addEventListener('click', () => helpModal.classList.add('open'));
@@ -3953,5 +3971,50 @@ if (localStorage.getItem('installDismissed')) {
 #installBanner.visible { display: flex; }
 </style>
 
+<script>
+// Chess tutor chat: sends position to /api/tutor, shows hints only.
+(function () {
+  const log = document.getElementById('tutorLog');
+  const form = document.getElementById('tutorForm');
+  const input = document.getElementById('tutorInput');
+  const send = document.getElementById('tutorSend');
+
+  function addMsg(text, who) {
+    const d = document.createElement('div');
+    d.className = 'tutor-msg ' + who;
+    d.textContent = text;
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  addMsg('Hi! Ask me a simple chess question. I give hints, not answers.', 'coach');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const question = input.value.trim();
+    if (!question || !window.getTutorState) return;
+    addMsg(question, 'me');
+    input.value = '';
+    send.disabled = true;
+    addMsg('Thinking…', 'coach');
+    const thinking = log.lastChild;
+    try {
+      const state = window.getTutorState();
+      const res = await fetch('/api/tutor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, fen: state.fen, pgn: state.pgn, turn: state.turn }),
+      });
+      const data = await res.json().catch(() => ({}));
+      thinking.textContent = res.ok ? data.answer : (data.error || 'Coach could not answer. Try again.');
+    } catch (err) {
+      thinking.textContent = 'No connection to Coach. Check your internet and try again.';
+    } finally {
+      send.disabled = false;
+      input.focus();
+    }
+  });
+})();
+</script>
 </body>
 </html>
