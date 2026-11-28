@@ -196,8 +196,8 @@
       <button id="undoBtn">Take Back</button>
       <button id="newBtn">New Game</button>
       <select id="difficulty">
-        <option value="1">Bot: Easy</option>
-        <option value="2" selected>Bot: Medium</option>
+        <option value="1" selected>Bot: Easy</option>
+        <option value="2">Bot: Medium</option>
         <option value="3">Bot: Hard</option>
       </select>
     </div>
@@ -3680,6 +3680,7 @@ let legalTargets = [];
 let lastMove = null;
 let humanColor = 'w';
 let botThinking = false;
+let lastHumanSan = null;
 
 function squareName(r, c) { return FILES[c] + (8 - r); }
 function isLight(r, c) { return (r + c) % 2 === 0; }
@@ -3762,6 +3763,7 @@ function onSquareClick(e) {
     lastMove = { from: moveObj.from, to: moveObj.to };
     selected = null; legalTargets = [];
     const after = analyzeHuman();
+    lastHumanSan = moveObj.san;
     const verdict = reviewHumanMove(before, after, moveObj);
     render();
     setCoach(verdict.text, verdict.kind);
@@ -3806,15 +3808,42 @@ function reviewHumanMove(before, after, moveObj) {
   return { text: `${san}. Solid. Keep developing and watch the center.`, kind: '' };
 }
 
-function botMove() {
+async function botMove() {
   const depth = +difficultyEl.value;
-  const { move } = findBestMove(game, depth);
-  if (move) {
-    game.move({ from: move.from, to: move.to, promotion: 'q' });
-    lastMove = { from: move.from, to: move.to };
+  const level = ['easy', 'medium', 'hard'][depth - 1] || 'easy';
+  const gameRef = game;
+  let remark = '';
+  let played = null;
+
+  // 1) Ask the LLM for the bot's move. Must be legal per chess.js.
+  try {
+    const res = await fetch('/api/bot-move', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ difficulty: level, fen: game.fen(), pgn: game.pgn(), botColor: game.turn(), lastMove: lastHumanSan }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      let m = null;
+      try { m = game.move(data.move, { sloppy: true }); } catch (e) { m = null; }
+      if (m) { played = m; remark = data.remark || ''; }
+    }
+  } catch (e) { /* network down: use engine below */ }
+
+  if (gameRef !== game) { botThinking = false; return; } // student pressed New Game meanwhile
+
+  // 2) Fallback: built-in engine if the LLM failed or gave an illegal move.
+  if (!played) {
+    const { move } = findBestMove(game, depth);
+    if (move) {
+      played = game.move({ from: move.from, to: move.to, promotion: 'q' });
+    }
   }
+  if (played) lastMove = { from: played.from, to: played.to };
+
   botThinking = false;
   render();
+  if (remark && !game.isGameOver()) setCoach(remark, '');
   if (game.isGameOver()) {
     if (game.isCheckmate()) setCoach(game.turn() === humanColor ? 'Bot wins. Rematch?' : 'You win. Nicely played!', game.turn() === humanColor ? 'bad' : 'good');
     else setCoach('Draw. Balanced game.', '');
